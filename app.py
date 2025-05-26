@@ -52,49 +52,42 @@ exclusive_groups = [
     {"当店付け替えオフ", "他店オフ", "ハードジェルオフ", "ポリッシュオフ"}
 ]
 
-# 変数を先に初期化
 veteran_total = 0
 target_total = 0
 
 if "selected" not in st.session_state:
     st.session_state.selected = []
 
-
-    """,
-    unsafe_allow_html=True
-)
+# 合計時間エリアをリアルタイム更新用にプレースホルダー化
+header_placeholder = st.empty()
 
 st.title("ネイル施術時間シミュレーター")
 
 for category, items in menu_categories.items():
-    st.subheader(f"【{category}】")
-    cols = st.columns(3)
-    for idx, (name, vet, tgt) in enumerate(items):
-        with cols[idx % 3]:
-            is_checked = name in st.session_state.selected
-            disabled = False
-            for group in exclusive_groups:
-                if name in group:
-                    if any(other in st.session_state.selected and other != name for other in group):
-                        disabled = True
-                        break
-            checked = st.checkbox(name, value=is_checked, key=name, disabled=disabled)
-            if checked and name not in st.session_state.selected:
-                st.session_state.selected.append(name)
-            elif not checked and name in st.session_state.selected:
-                st.session_state.selected.remove(name)
+    with st.expander(f"【{category}】", expanded=True):
+        cols = st.columns(3)
+        for idx, (name, vet, tgt) in enumerate(items):
+            with cols[idx % 3]:
+                is_checked = name in st.session_state.selected
+                disabled = any(
+                    name in group and any(
+                        other in st.session_state.selected and other != name
+                        for other in group
+                    ) for group in exclusive_groups
+                )
+                checked = st.checkbox(name, value=is_checked, key=name, disabled=disabled)
+                if checked and name not in st.session_state.selected:
+                    st.session_state.selected.append(name)
+                elif not checked and name in st.session_state.selected:
+                    st.session_state.selected.remove(name)
 
-for category_items in menu_categories.values():
-    for name, vet, tgt in category_items:
-        if name in st.session_state.selected:
-            veteran_total += vet
-            target_total += tgt
+veteran_total = sum(vet for cat in menu_categories.values() for name, vet, _ in cat if name in st.session_state.selected)
+target_total = sum(tgt for cat in menu_categories.values() for name, _, tgt in cat if name in st.session_state.selected)
 
-# 合計時間を画面上部に固定表示（再配置：計算後）
-st.markdown(
+header_placeholder.markdown(
     f"""
-    <div style='position:fixed; top:0; left:0; right:0; background-color:#f9f9f9; padding:10px; z-index:1000; border-bottom:1px solid #ddd;'>
-        <strong>🧑‍🏫 ベテラン：{veteran_total}分　👶 新人：{target_total}分</strong>
+    <div style='position:fixed; top:0; left:0; right:0; background-color:#f0f0f0; padding:6px 10px; z-index:1000; border-bottom:1px solid #ccc; font-size:13px;'>
+        <strong>合計時間 ▶︎ ベテラン：{veteran_total}分 ／ 新人：{target_total}分</strong>
     </div>
     <br><br><br>
     """,
