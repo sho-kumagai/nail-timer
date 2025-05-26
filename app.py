@@ -1,6 +1,5 @@
 import streamlit as st
 
-# 工程別カテゴリと排他グループ設定
 menu_categories = {
     "ケア": [
         ("プレパレーション（基本ケア）", 15, 25),
@@ -67,29 +66,25 @@ for category, items in menu_categories.items():
     for idx, (name, vet, tgt) in enumerate(items):
         with cols[idx % 3]:
             is_checked = name in st.session_state.selected
-            # 排他制御チェック
             disabled = False
             for group in exclusive_groups:
                 if name in group:
                     if any(other in st.session_state.selected and other != name for other in group):
                         disabled = True
                         break
-            # チェックボックス表示
             checked = st.checkbox(name, value=is_checked, key=name, disabled=disabled)
             if checked and name not in st.session_state.selected:
                 st.session_state.selected.append(name)
             elif not checked and name in st.session_state.selected:
                 st.session_state.selected.remove(name)
 
-# 時間合計
 for category_items in menu_categories.values():
     for name, vet, tgt in category_items:
         if name in st.session_state.selected:
             veteran_total += vet
             target_total += tgt
 
-if st.session_state.selected:
-    st.write(f"🧑‍🏫 ベテランの合計時間：{veteran_total}分")
-    st.write(f"👶 新人の目標時間：{target_total}分")
-else:
-    st.info("上からメニューを選んでください")
+# 合計時間をサイドバーに常時表示
+st.sidebar.header("⏱ 合計施術時間")
+st.sidebar.write(f"🧑‍🏫 ベテラン基準：{veteran_total}分")
+st.sidebar.write(f"👶 新人目標：{target_total}分")
