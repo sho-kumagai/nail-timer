@@ -52,9 +52,6 @@ exclusive_groups = [
     {"当店付け替えオフ", "他店オフ", "ハードジェルオフ", "ポリッシュオフ"}
 ]
 
-veteran_total = 0
-target_total = 0
-
 if "selected" not in st.session_state:
     st.session_state.selected = []
 
@@ -63,6 +60,7 @@ header_placeholder = st.empty()
 
 st.title("ネイル施術時間シミュレーター")
 
+# メニュー選択ブロック
 for category, items in menu_categories.items():
     with st.expander(f"【{category}】", expanded=True):
         cols = st.columns(3)
@@ -81,7 +79,7 @@ for category, items in menu_categories.items():
                 elif not checked and name in st.session_state.selected:
                     st.session_state.selected.remove(name)
 
-# 合計時間を再計算（メニュー描画のあと）
+# 合計時間の再計算
 veteran_total = sum(vet for cat in menu_categories.values() for name, vet, _ in cat if name in st.session_state.selected)
 target_total = sum(tgt for cat in menu_categories.values() for name, _, tgt in cat if name in st.session_state.selected)
 
@@ -91,6 +89,3 @@ header_placeholder.markdown("""
     <strong>合計時間 ▶ ベテラン：{}分 ／ 新人：{}分</strong>
 </div>
 <br><br><br>""".format(veteran_total, target_total), unsafe_allow_html=True)
-    """,
-    unsafe_allow_html=True
-)
