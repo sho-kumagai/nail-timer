@@ -52,13 +52,24 @@ exclusive_groups = [
     {"当店付け替えオフ", "他店オフ", "ハードジェルオフ", "ポリッシュオフ"}
 ]
 
-st.title("ネイル施術時間シミュレーター")
+veteran_total = 0
+target_total = 0
 
 if "selected" not in st.session_state:
     st.session_state.selected = []
 
-veteran_total = 0
-target_total = 0
+# 合計時間を画面上部に固定表示
+st.markdown(
+    f"""
+    <div style='position:fixed; top:0; left:0; right:0; background-color:#f9f9f9; padding:10px; z-index:1000; border-bottom:1px solid #ddd;'>
+        <strong>🧑‍🏫 ベテラン：{veteran_total}分　👶 新人：{target_total}分</strong>
+    </div>
+    <br><br><br>
+    """,
+    unsafe_allow_html=True
+)
+
+st.title("ネイル施術時間シミュレーター")
 
 for category, items in menu_categories.items():
     st.subheader(f"【{category}】")
@@ -83,8 +94,3 @@ for category_items in menu_categories.values():
         if name in st.session_state.selected:
             veteran_total += vet
             target_total += tgt
-
-# 合計時間をサイドバーに常時表示
-st.sidebar.header("⏱ 合計施術時間")
-st.sidebar.write(f"🧑‍🏫 ベテラン基準：{veteran_total}分")
-st.sidebar.write(f"👶 新人目標：{target_total}分")
