@@ -86,7 +86,5 @@ target_total = sum(tgt for cat in menu_categories.values() for name, _, tgt in c
 
 # 下部に合計時間を表示
 st.markdown("---")
-st.subheader("
-
-🧮 合計時間")
+st.subheader("🧮 合計時間")
 st.markdown(f"ベテラン：**{veteran_total}分**　／　新人：**{target_total}分**")
