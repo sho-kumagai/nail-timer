@@ -86,4 +86,4 @@ veteran_total = sum(vet for cat in menu_categories.values() for name, vet, _ in 
 target_total = sum(tgt for cat in menu_categories.values() for name, _, tgt in cat if name in st.session_state.selected)
 
 # 上部にリアルタイムで固定表示
-header_placeholder.markdown(f"ベテラン：{veteran_total}分 ／ 新人：{target_total}分"), unsafe_allow_html=True)
+header_placeholder.markdown(f"ベテラン：{veteran_total}分 ／ 新人：{target_total}分", unsafe_allow_html=True)
