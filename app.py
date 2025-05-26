@@ -95,7 +95,3 @@ header_placeholder.markdown(
     """,
     unsafe_allow_html=True
 )
-    <br><br><br>
-    """,
-    unsafe_allow_html=True
-)
