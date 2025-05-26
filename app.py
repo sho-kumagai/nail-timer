@@ -59,7 +59,6 @@ if "selected" not in st.session_state:
     st.session_state.selected = []
 
 # 合計時間エリアをリアルタイム更新用にプレースホルダー化
-header_placeholder = st.empty()
 
 st.title("ネイル施術時間シミュレーター")
 
@@ -85,5 +84,9 @@ for category, items in menu_categories.items():
 veteran_total = sum(vet for cat in menu_categories.values() for name, vet, _ in cat if name in st.session_state.selected)
 target_total = sum(tgt for cat in menu_categories.values() for name, _, tgt in cat if name in st.session_state.selected)
 
-# 上部にリアルタイムで固定表示
-header_placeholder.markdown(f"ベテラン：{veteran_total}分 ／ 新人：{target_total}分", unsafe_allow_html=True)
+# 下部に合計時間を表示
+st.markdown("---")
+st.subheader("
+
+🧮 合計時間")
+st.markdown(f"ベテラン：**{veteran_total}分**　／　新人：**{target_total}分**")
