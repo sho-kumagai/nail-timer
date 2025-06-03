@@ -1,7 +1,5 @@
 import streamlit as st
-import math
 
-# 新人向け施術メニューと時間（分）
 menu_items = [
     ("ファイリング", 5, 10, "10分以内を目標に。まずは1本1分で整える練習から。"),
     ("甘皮処理", 5, 10, "押し上げ＋ニッパーで片手5分を目安。丁寧さ優先。"),
@@ -10,42 +8,45 @@ menu_items = [
     ("カラー2度塗＋硬化", 10, 20, "1度塗り10分＋2度目10分が理想。ムラをなくす練習を。"),
     ("フレンチ／グラデ", 15, 20, "通常カラーに追加10分。ライン取りに集中して練習。"),
     ("軽めアート2本", 15, 15, "ストーンや簡単なラメなら片手7〜8分。左右差に注意。"),
-    ("複雑アート", 30, 45, "手描き・埋め込みなどは30分以上もOK。正確さ重視で。"),
+    ("複雑アート", 30, 40, "手描き・埋め込みなどは30分以上もOK。正確さ重視で。"),
     ("ストーン配置", 5, 10, "バランス・配置ミス防止を意識して丁寧に。"),
     ("トップ塗布＋硬化", 10, 20, "凹凸を覆う意識で塗って10分以内。流れやすいので注意。"),
     ("拭き取り仕上げ", 3, 3, "未硬化ジェルの拭き残しがないか丁寧に。"),
     ("オイル＋マッサージ", 1, 3, "1本10秒×10本で2分＋全体仕上げ3分が目安。"),
-    ("オフ（自店）", 10, 15, "フィルインなので１本1分目安、待ち時間不要。パーツオフ込みで目標。"),
-    ("オフ（他店）", 40, 45, "厚みのあるジェルや強いベースには余裕を持って対応。")
+    ("オフ（自店）", 10, 15, "フィルインなので１本1分目安、待ち時間不要なのでパーツオフとかも込みで目標。"),
+    ("オフ（他店）", 40, 40, "厚みのあるジェルや強いベースには余裕を持って対応。")
 ]
 
+st.title("ネイル施術 練習用タイム目安リスト")
+
 if "selected" not in st.session_state:
-    st.session_state.selected = []
+    st.session_state.selected = set()
 
-st.title("ネイル施術 練習用タイム目安シミュレーター")
+col1, col2 = st.columns(2)
 
-cols = st.columns(2)
-for i, (name, min_t, max_t, memo) in enumerate(menu_items):
-    col = cols[i % 2]
+for idx, (name, min_time, max_time, note) in enumerate(menu_items):
+    col = col1 if idx % 2 == 0 else col2
     with col:
-        checked = st.checkbox(name, key=name)
-        if checked and name not in st.session_state.selected:
-            st.session_state.selected.append(name)
-        elif not checked and name in st.session_state.selected:
-            st.session_state.selected.remove(name)
-        st.caption(memo)
+        checked = st.checkbox(name, key=name, value=name in st.session_state.selected)
+        if checked:
+            st.session_state.selected.add(name)
+        else:
+            st.session_state.selected.discard(name)
+        st.caption(note)
 
-# 合計時間の計算
-selected_items = [item for item in menu_items if item[0] in st.session_state.selected]
-total_min = sum(item[1] for item in selected_items)
-total_max = sum(item[2] for item in selected_items)
+if st.button("選択をリセット"):
+    st.session_state.selected.clear()
+    st.experimental_rerun()
 
-# 下部に合計時間と選択メニュー表示
 st.markdown("---")
-st.subheader("🧮 合計時間")
-st.markdown(f"新人の目標時間：**{total_min}〜{total_max}分**")
 
+selected_items = [item for item in menu_items if item[0] in st.session_state.selected]
 if selected_items:
-    st.subheader("📝 選択中のメニュー")
-    for name, min_t, max_t, _ in selected_items:
-        st.markdown(f"{name:<25}（{min_t}〜{max_t}分）")
+    st.subheader("🧮 合計時間")
+    min_total = sum(item[1] for item in selected_items)
+    max_total = sum(item[2] for item in selected_items)
+    st.markdown(f"**{min_total}〜{max_total}分**")
+
+    st.markdown("### 選択されたメニュー：")
+    for name, min_time, max_time, _ in selected_items:
+        st.markdown(f"{name.ljust(20)} {'（新）'+str(max_time)+'分'.rjust(6)} {'（べ）'+str(min_time)+'分'.rjust(6)}")
