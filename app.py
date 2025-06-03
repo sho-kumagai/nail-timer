@@ -27,7 +27,8 @@ col1, col2 = st.columns(2)
 for idx, (name, min_time, max_time, note) in enumerate(menu_items):
     col = col1 if idx % 2 == 0 else col2
     with col:
-        checked = st.checkbox(name, key=name, value=name in st.session_state.selected)
+        label = f"{name}（目標：{max_time}分）"
+        checked = st.checkbox(label, key=name, value=name in st.session_state.selected)
         if checked and name not in st.session_state.selected:
             st.session_state.selected.append(name)
         elif not checked and name in st.session_state.selected:
@@ -41,7 +42,7 @@ st.markdown("---")
 
 selected_items = [item for item in menu_items if item[0] in st.session_state.selected]
 if selected_items:
-    st.subheader("🧮 合計時間")
+    st.subheader("🧮 合計目標時間")
     min_total = sum(item[1] for item in selected_items)
     max_total = sum(item[2] for item in selected_items)
     st.markdown(f"**{min_total}〜{max_total}分**")
