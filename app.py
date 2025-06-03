@@ -17,7 +17,7 @@ menu_items = [
     ("オフ（他店）", 40, 40, "厚みのあるジェルや強いベースには余裕を持って対応。")
 ]
 
-st.title("ネイル施術 練習用タイム目安リスト")
+st.markdown("<h3>ネイル施術 練習用タイム目安リスト</h3>", unsafe_allow_html=True)
 
 if "selected" not in st.session_state:
     st.session_state.selected = []
