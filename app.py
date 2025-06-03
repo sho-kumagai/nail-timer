@@ -1,90 +1,36 @@
 import streamlit as st
 
-menu_categories = {
-    "ケア": [
-        ("プレパレーション（基本ケア）", 15, 25),
-        ("ウォーターケア", 20, 30),
-        ("ドライケア", 15, 25),
-        ("ハンドスパ", 20, 30),
-    ],
-    "デザイン": [
-        ("ワンカラー（2色まで）", 40, 60),
-        ("ワンカラー（3色以上）", 50, 70),
-        ("グラデーション（縦）", 50, 70),
-        ("グラデーション（横）", 50, 70),
-        ("ラメグラ", 40, 60),
-        ("マグネットネイル（アートなし）", 45, 65),
-        ("マグネットネイル（アート込み）", 55, 75),
-        ("フレンチネイル（クリアベース）", 60, 90),
-        ("変形フレンチ", 65, 95),
-        ("ミラーネイル", 45, 65),
-        ("ニュアンス（アート2本）", 60, 90),
-        ("ニュアンス（アート4〜6本）", 75, 105),
-        ("手描きアート（1本）", 15, 25),
-        ("水彩アート・インクアート", 30, 45),
-        ("パーツアート（3D）", 20, 30),
-        ("フィルム／ホイルアート", 20, 30),
-    ],
-    "スカルプ・補強": [
-        ("ジェルスカルプ（1本）", 7, 10),
-        ("フォームスカルプ（1本）", 10, 15),
-        ("チップオーバーレイ", 60, 90),
-        ("リペア（亀裂補強・1本）", 10, 15),
-        ("亀裂補修＋補強（セット）", 15, 20),
-    ],
-    "オフ": [
-        ("当店付け替えオフ", 20, 30),
-        ("他店オフ", 30, 45),
-        ("ハードジェルオフ", 45, 60),
-        ("ポリッシュオフ", 10, 15),
-    ],
-    "その他オプション": [
-        ("ネイルチップ作成（オーダー）", 90, 120),
-        ("カラー追加（1色ごと）", 5, 10),
-        ("パーツ追加（個数ごと）", 3, 5),
-        ("コーティング（艶あり・マット）", 5, 10),
-    ]
-}
-
-exclusive_groups = [
-    {"ワンカラー（2色まで）", "ワンカラー（3色以上）", "グラデーション（縦）", "グラデーション（横）", "ラメグラ", "マグネットネイル（アートなし）", "マグネットネイル（アート込み）"},
-    {"フレンチネイル（クリアベース）", "変形フレンチ"},
-    {"当店付け替えオフ", "他店オフ", "ハードジェルオフ", "ポリッシュオフ"}
+# 新人練習用メニューと時間目安（コメント付き）
+menu_list = [
+    ("ファイリング", 5, 10, "→ 10分以内を目標に。まずは1本1分で整える練習から。"),
+    ("甘皮処理", 5, 10, "→ 押し上げ＋ニッパーで片手5分を目安。丁寧さ優先。"),
+    ("サンディング", 5, 10, "→ 片手2分半ずつ。全体をまんべんなく削れるか意識。"),
+    ("ベース塗布＋硬化", 10, 15, "→ 厚みを均一に塗って10分以内。はみ出し確認も忘れずに。"),
+    ("カラー2度塗＋硬化", 10, 20, "→ 1度塗り10分＋2度目10分が理想。ムラをなくす練習を。"),
+    ("フレンチ／グラデ", 15, 20, "→ 通常カラーに追加10分。ライン取りに集中して練習。"),
+    ("軽めアート2本", 15, 15, "→ ストーンや簡単なラメなら片手7〜8分。左右差に注意。"),
+    ("複雑アート", 30, 40, "→ 手描き・埋め込みなどは30分以上もOK。正確さ重視で。"),
+    ("ストーン配置", 5, 10, "→ バランス・配置ミス防止を意識して丁寧に。"),
+    ("トップ塗布＋硬化", 10, 20, "→ 凹凸を覆う意識で塗って10分以内。流れやすいので注意。"),
+    ("拭き取り仕上げ", 3, 3, "→ 未硬化ジェルの拭き残しがないか丁寧に。"),
+    ("オイル＋マッサージ", 1, 3, "→ 1本10秒×10本で2分＋全体仕上げ3分が目安。"),
+    ("オフ（自店）", 10, 15, "→ 巻き→待ち時間→除去で30分。時短できる方法を探して。"),
+    ("オフ（他店）", 40, 40, "→ 厚みのあるジェルや強いベースには余裕を持って対応。")
 ]
 
-veteran_total = 0
-target_total = 0
+st.title("ネイル施術 練習用タイム目安リスト（新人向け／コメント付き）")
 
-if "selected" not in st.session_state:
-    st.session_state.selected = []
+total_min = 0
+total_max = 0
 
-# 合計時間エリアをリアルタイム更新用にプレースホルダー化
+for name, min_time, max_time, comment in menu_list:
+    st.checkbox(f"{name}（{min_time}〜{max_time}分）", key=name)
+    st.caption(comment)
 
-st.title("ネイル施術時間シミュレーター")
+    if st.session_state.get(name):
+        total_min += min_time
+        total_max += max_time
 
-for category, items in menu_categories.items():
-    with st.expander(f"【{category}】", expanded=True):
-        cols = st.columns(3)
-        for idx, (name, vet, tgt) in enumerate(items):
-            with cols[idx % 3]:
-                is_checked = name in st.session_state.selected
-                disabled = any(
-                    name in group and any(
-                        other in st.session_state.selected and other != name
-                        for other in group
-                    ) for group in exclusive_groups
-                )
-                checked = st.checkbox(name, value=is_checked, key=name, disabled=disabled)
-                if checked and name not in st.session_state.selected:
-                    st.session_state.selected.append(name)
-                elif not checked and name in st.session_state.selected:
-                    st.session_state.selected.remove(name)
-
-# 合計時間を再計算（メニュー描画のあと）
-veteran_total = sum(vet for cat in menu_categories.values() for name, vet, _ in cat if name in st.session_state.selected)
-target_total = sum(tgt for cat in menu_categories.values() for name, _, tgt in cat if name in st.session_state.selected)
-
-# 下部に合計時間を表示
 st.markdown("---")
-st.subheader("🧮 合計時間")
-st.markdown(f"ベテラン：**{veteran_total}分**　／　新人：**{target_total}分**")
+st.subheader("🧮 合計練習時間")
+st.markdown(f"**{total_min}〜{total_max}分** です。")
