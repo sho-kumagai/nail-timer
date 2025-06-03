@@ -36,7 +36,6 @@ for idx, (name, min_time, max_time, note) in enumerate(menu_items):
 
 if st.button("選択をリセット"):
     st.session_state.selected = []
-    st.experimental_rerun()
 
 st.markdown("---")
 
