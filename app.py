@@ -1,4 +1,5 @@
 import streamlit as st
+import time
 
 menu_items = [
     ("ファイリング", 10, "10分以内を目標に。まずは1本1分で整える練習から。"),
@@ -40,5 +41,9 @@ st.markdown("---")
 st.markdown(f"**合計目標時間：{total_time}分**")
 
 if st.button("リセット"):
-    for key in list(st.session_state.keys()):
-        del st.session_state[key]
+    for menu, _, _ in menu_items:
+        if menu in st.session_state:
+            st.session_state[menu] = False
+    st.session_state.selected_items = []
+    time.sleep(0.1)
+    st.experimental_rerun()
