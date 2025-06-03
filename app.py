@@ -20,7 +20,7 @@ menu_items = [
 st.title("ネイル施術 練習用タイム目安リスト")
 
 if "selected" not in st.session_state:
-    st.session_state.selected = set()
+    st.session_state.selected = []
 
 col1, col2 = st.columns(2)
 
@@ -28,14 +28,14 @@ for idx, (name, min_time, max_time, note) in enumerate(menu_items):
     col = col1 if idx % 2 == 0 else col2
     with col:
         checked = st.checkbox(name, key=name, value=name in st.session_state.selected)
-        if checked:
-            st.session_state.selected.add(name)
-        else:
-            st.session_state.selected.discard(name)
+        if checked and name not in st.session_state.selected:
+            st.session_state.selected.append(name)
+        elif not checked and name in st.session_state.selected:
+            st.session_state.selected.remove(name)
         st.caption(note)
 
 if st.button("選択をリセット"):
-    st.session_state.selected.clear()
+    st.session_state.selected = []
     st.experimental_rerun()
 
 st.markdown("---")
