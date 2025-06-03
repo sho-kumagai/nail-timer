@@ -20,7 +20,7 @@ menu_items = [
 if "selected_items" not in st.session_state:
     st.session_state.selected_items = []
 
-st.markdown("### ネイル施術 練習用タイム目安リスト")
+st.markdown("#### ネイル施術 練習用タイム目安リスト")
 
 total_time = 0
 cols = st.columns(2)
@@ -40,5 +40,5 @@ st.markdown("---")
 st.markdown(f"**合計目標時間：{total_time}分**")
 
 if st.button("リセット"):
-    st.session_state.selected_items.clear()
-    st.experimental_rerun()
+    for key in list(st.session_state.keys()):
+        del st.session_state[key]
