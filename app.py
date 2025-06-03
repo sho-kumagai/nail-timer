@@ -1,6 +1,5 @@
 import streamlit as st
 
-# メニュー項目（名前, 所要時間, メモ）
 menu_items = [
     ("ファイリング", 10, "10分以内を目標に。まずは1本1分で整える練習から。"),
     ("甘皮処理", 10, "押し上げ＋ニッパーで片手5分を目安。丁寧さ優先。"),
@@ -18,42 +17,34 @@ menu_items = [
     ("オフ（他店）", 40, "厚みのあるジェルや強いベースには余裕を持って対応。")
 ]
 
-# リセット処理をフラグで管理
-if "reset_triggered" not in st.session_state:
-    st.session_state.reset_triggered = False
+# タイトルのフォントサイズを小さく
+st.markdown('<h4>ネイル施術 練習用タイム目安リスト</h4>', unsafe_allow_html=True)
 
-# タイトル表示
-st.markdown("#### ネイル施術 練習用タイム目安リスト")
-
-# 合計時間初期化
 total_time = 0
 cols = st.columns(2)
 
-# チェックボックス描画と選択の管理
+# セッション状態初期化
+for menu, _, _ in menu_items:
+    key = f"chk_{menu}"
+    if key not in st.session_state:
+        st.session_state[key] = False
+
+# UI構築
 for idx, (menu, minutes, note) in enumerate(menu_items):
     with cols[idx % 2]:
-        key_name = f"chk_{menu}"
-
-        # リセットが押された直後は強制的にFalseに設定
-        if st.session_state.reset_triggered:
-            st.session_state[key_name] = False
-
-        checked = st.checkbox(f"{menu}（目標：{minutes}分）", key=key_name)
-        if checked:
+        key = f"chk_{menu}"
+        st.session_state[key] = st.checkbox(f"{menu}（目標：{minutes}分）", key=key)
+        if st.session_state[key]:
             total_time += minutes
         st.caption(note)
 
-# 合計表示
+# 合計時間表示
 st.markdown("---")
 st.markdown(f"**合計目標時間：{total_time}分**")
 
-# リセットボタン
+# リセットボタン処理
 if st.button("リセット"):
     for menu, _, _ in menu_items:
         key = f"chk_{menu}"
-        if key in st.session_state:
-            st.session_state[key] = False
-    st.session_state.reset_triggered = True
+        st.session_state[key] = False
     st.rerun()
-else:
-    st.session_state.reset_triggered = False
