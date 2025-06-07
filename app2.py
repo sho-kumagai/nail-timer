@@ -1,63 +1,108 @@
-import streamlit as st
-import pandas as pd
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ネイル材料価格検索アプリ</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      font-size: 14px;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tr:hover {
+      background-color: #eef;
+    }
+  </style>
+</head>
+<body>
+  <h1>ネイル材料価格検索</h1>
+  <input type="text" id="searchBox" placeholder="キーワードで絞り込み（例：Riccagel、トップ、¥100 など）">
 
-st.set_page_config(page_title="ネイル材料価格表", layout="wide")
-st.title("ネイル材料価格表（完全版）")
+  <table id="materialsTable">
+    <thead>
+      <tr>
+        <th>カテゴリ</th>
+        <th>用途</th>
+        <th>ブランド</th>
+        <th>製品名</th>
+        <th>容量</th>
+        <th>価格</th>
+        <th>単価</th>
+        <th>使用量</th>
+        <th>回数</th>
+        <th>1回材料費</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- 例：以下にデータを必要に応じて追加 -->
+      <tr>
+        <td>ジェル</td>
+        <td>ベースジェル</td>
+        <td>Riccagel</td>
+        <td>ベースジェルジュラフィット</td>
+        <td>10g</td>
+        <td>¥2,750</td>
+        <td>¥275</td>
+        <td>0.5g</td>
+        <td>20</td>
+        <td>¥138</td>
+      </tr>
+      <tr>
+        <td>トップコート</td>
+        <td>ミラーネイル</td>
+        <td>PREGEL</td>
+        <td>ノンワイプクリアキャンジェル</td>
+        <td>14g</td>
+        <td>¥2,178</td>
+        <td>¥156</td>
+        <td>0.5g</td>
+        <td>28</td>
+        <td>¥78</td>
+      </tr>
+      <!-- 必要に応じて増やしてください -->
+    </tbody>
+  </table>
 
-# 全データ（抜粋済みだが100行以上に展開可能な構造）
-columns = [
-    "カテゴリ", "用途", "ブランド", "製品名", "容量", "通常価格", "TAT価格", "備考", "優先順位",
-    "容量数値", "容量単位", "単価（通常）", "単価（TAT価格）", "目安使用量", "使用可能回数", "1回あたり材料費"
-]
+  <script>
+    // フィルター処理
+    document.getElementById('searchBox').addEventListener('input', function () {
+      const keyword = this.value.toLowerCase();
+      const rows = document.querySelectorAll('#materialsTable tbody tr');
 
-data = [
-    ["ジェル", "アート", "Riccagel", "ベースジェルジュラフィット", "10g", 2750, "", "ネイルパートナーのみ", 1, 10, "g", 275, "", 0.5, 20, 138],
-    ["ジェル", "アート", "Riccagel", "ベースジェルジュラフィット", "30g", 7480, "", "ネイルパートナーのみ", 1, 30, "g", 249, "", 0.5, 60, 125],
-    ["ジェル", "アート", "Riccagel", "RICCAマットコートジェル", "10g", 2750, "", "色鉛筆・マットトップ仕上げ用", 1, 10, "g", 275, "", 0.5, 20, 138],
-    ["ジェル", "アート", "スネークベース", "フィルイン用ベースジェル", "15g", 4400, "", "楽天／黄色くなりやすい", 3, 15, "g", 293, "", 0.5, 30, 147],
-    ["ジェル", "アート", "メルティジェル", "クリアジェル", "14g", 1540, 1400, "カラー作成用", 1, 14, "g", 110, 100, 0.5, 28, 55],
-    ["ジェル", "アート", "ibd", "LEDクリアジェル", "56g", 8250, 7500, "ハードジェル", 2, 56, "g", 147, 134, 0.5, 112, 74]
-]
-
-df = pd.DataFrame(data, columns=columns)
-if "selected" not in st.session_state:
-    st.session_state.selected = []
-if "checked_ids" not in st.session_state:
-    st.session_state.checked_ids = set()
-
-with st.sidebar:
-    st.header("📊 合計金額")
-    if st.session_state.selected:
-        sdf = pd.DataFrame(st.session_state.selected)
-        st.success(f"通常: ¥{int(sdf['通常価格'].sum()):,} ／ TAT: ¥{int(sdf['TAT価格'].replace('', 0).astype(float).sum()):,}")
-    else:
-        st.info("商品にチェックを入れると合計金額が表示されます")
-    if st.button("🧹 全リセット"):
-        st.session_state.selected = []
-        st.session_state.checked_ids = set()
-
-st.markdown("### ✅ 商品選択")
-
-for idx, row in df.iterrows():
-    cid = f"chk_{idx}"
-    label = f"{row['製品名']}（{row['容量']} ／ 単価: ¥{row['単価（通常）']}）"
-    if row["優先順位"] and int(row["優先順位"]) == 1:
-        label = f"🟥 {label}"
-    elif row["優先順位"] and int(row["優先順位"]) == 2:
-        label = f"🟧 {label}"
-    elif row["優先順位"] and int(row["優先順位"]) == 3:
-        label = f"🟨 {label}"
-    checked = cid in st.session_state.checked_ids
-    if st.checkbox(label, key=cid, value=checked):
-        if cid not in st.session_state.checked_ids:
-            st.session_state.checked_ids.add(cid)
-            st.session_state.selected.append(row)
-    else:
-        if cid in st.session_state.checked_ids:
-            st.session_state.checked_ids.remove(cid)
-            st.session_state.selected = [
-                r for r in st.session_state.selected
-                if not (r['製品名'] == row['製品名'] and r['容量'] == row['容量'])
-            ]
-    if row["備考"]:
-        st.caption(f"　{row['備考']}")
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(keyword) ? '' : 'none';
+      });
+    });
+  </script>
+</body>
+</html>
