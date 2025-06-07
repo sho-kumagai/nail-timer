@@ -79,13 +79,14 @@ for idx, row in filtered.iterrows():
 <span style='color:#009900;font-weight:bold'>{comment}</span>
 """, unsafe_allow_html=True)
     st.markdown("---")
-# 💰 リアルタイム合計金額表示
+# 💰 リアルタイム合計金額表示（サイドバー内）
 if st.session_state.selected:
     realtime_df = pd.DataFrame(st.session_state.selected)
     reg = int(realtime_df["通常価格"].sum())
     tat = int(realtime_df["TAT価格"].sum())
     avg = int(realtime_df["1回あたり材料費"].mean())
-    st.info(f"💸 選択中 ▶ 通常: ¥{reg:,} ／ TAT: ¥{tat:,} ／ 平均材料費: ¥{avg}")
+        st.sidebar.markdown(f"### 💰 合計")
+    st.sidebar.success(f"通常: ¥{reg:,}\nTAT: ¥{tat:,}\n平均: ¥{avg}")
 
 
 if st.session_state.selected:
