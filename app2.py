@@ -26,4 +26,7 @@ keyword = st.text_input("キーワードで検索（例：Riccagel, ベース, 1
 
 # フィルター処理（ざっくり検索）
 if keyword:
-    df = df[df.astype(str).apply(lambda row: keyword.lower()]()
+    df = df[df.astype(str).apply(lambda row: keyword.lower() in row.str.lower().to_string(), axis=1)]
+
+# 表示
+st.dataframe(df, use_container_width=True)
