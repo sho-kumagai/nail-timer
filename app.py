@@ -1,6 +1,6 @@
 import streamlit as st
 
-# メニュー項目（名前, 時間, メモ）
+# メニューと時間・一言メモ
 menu_items = [
     ("ファイリング", 10, "10分以内を目標に。まずは1本1分で整える練習から。"),
     ("甘皮処理", 10, "押し上げ＋ニッパーで片手5分を目安。丁寧さ優先。"),
@@ -18,35 +18,42 @@ menu_items = [
     ("オフ（他店）", 40, "厚みのあるジェルや強いベースには余裕を持って対応。")
 ]
 
-# タイトル（メニューと同じサイズに調整）
+# 初期化（selected_itemsを持たせておく）
+if "selected_items" not in st.session_state:
+    st.session_state.selected_items = []
+
+# タイトル（小さく統一）
 st.markdown("##### ネイル施術 練習用タイム目安リスト")
 
-# 合計用変数
+# 合計時間初期化
 total_time = 0
 
-# 2列に分けてチェックボックスを表示
+# 横2列のカラムに分けて表示
 cols = st.columns(2)
-checked_states = {}
 
 for idx, (menu, minutes, note) in enumerate(menu_items):
+    key = f"menu_{idx}"
     with cols[idx % 2]:
-        key = f"menu_{idx}"
-        # チェックボックス表示
         checked = st.checkbox(f"{menu}（目標：{minutes}分）", key=key)
-        checked_states[key] = checked
-        # 合計に加算
+        if checked:
+            if menu not in st.session_state.selected_items:
+                st.session_state.selected_items.append(menu)
+        else:
+            if menu in st.session_state.selected_items:
+                st.session_state.selected_items.remove(menu)
         if checked:
             total_time += minutes
         st.caption(note)
 
-# 合計表示
+# 合計時間表示
 st.markdown("---")
 st.markdown(f"**合計目標時間：{total_time}分**")
 
-# リセット処理（session_state の該当キーを False に）
+# リセットボタン処理（安全にkeyを削除＋再描画）
 if st.button("リセット"):
     for idx in range(len(menu_items)):
         key = f"menu_{idx}"
         if key in st.session_state:
-            st.session_state[key] = False
+            del st.session_state[key]
+    st.session_state.selected_items = []
     st.experimental_rerun()
