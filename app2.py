@@ -91,7 +91,6 @@
   </table>
 
   <script>
-    // フィルター処理
     document.getElementById('searchBox').addEventListener('input', function () {
       const keyword = this.value.toLowerCase();
       const rows = document.querySelectorAll('#materialsTable tbody tr');
