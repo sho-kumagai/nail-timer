@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 
@@ -24,6 +23,13 @@ with st.sidebar:
     max_price = st.number_input("最高単価（通常）", 0, 10000, 10000)
     min_uses = st.number_input("最低使用可能回数", 0, 10000, 0)
     reset = st.button("🧹 チェックリセット")
+if st.session_state.selected:
+    result_df = pd.DataFrame(st.session_state.selected)
+    reg = int(result_df["通常価格"].sum())
+    tat = int(result_df["TAT価格"].sum())
+    avg = int(result_df["1回あたり材料費"].mean())
+    st.sidebar.markdown("### 💰 合計（選択中）")
+    st.sidebar.success(f"通常: ¥{reg:,}\nTAT: ¥{tat:,}\n平均材料費: ¥{avg}")
     if reset:
         st.session_state.selected = []
         st.session_state.checked_ids = set()
@@ -79,14 +85,13 @@ for idx, row in filtered.iterrows():
 <span style='color:#009900;font-weight:bold'>{comment}</span>
 """, unsafe_allow_html=True)
     st.markdown("---")
-# 💰 リアルタイム合計金額表示（サイドバー内）
+# 💰 リアルタイム合計金額表示
 if st.session_state.selected:
     realtime_df = pd.DataFrame(st.session_state.selected)
     reg = int(realtime_df["通常価格"].sum())
     tat = int(realtime_df["TAT価格"].sum())
     avg = int(realtime_df["1回あたり材料費"].mean())
-        st.sidebar.markdown(f"### 💰 合計")
-    st.sidebar.success(f"通常: ¥{reg:,}\nTAT: ¥{tat:,}\n平均: ¥{avg}")
+    st.info(f"💸 選択中 ▶ 通常: ¥{reg:,} ／ TAT: ¥{tat:,} ／ 平均材料費: ¥{avg}")
 
 
 if st.session_state.selected:
