@@ -34,11 +34,7 @@ filtered_df = df[df["カテゴリ"] == selected_category]
 
 for i, row in filtered_df.iterrows():
     row_id = f"{row['ブランド']}_{row['製品名']}_{i}"
-    label = (
-        f"{row['製品名']}（{row['容量']} / "
-        f"単価: ¥{int(row['単価（通常）']) if row['単価（通常）'] else 0}／"
-        f"¥{int(row['単価（TAT価格）']) if row['単価（TAT価格）'] else 0}）"
-    )
+    label = (f"{row['製品名']}（{row['容量']} / "f"単価: ¥{int(row['単価（通常）']) if row['単価（通常）'] else 0}／¥{int(row['単価（TAT価格）']) if row['単価（TAT価格）'] else 0}）")
     checked = row_id in st.session_state.checked_items
     if st.checkbox(label, value=checked, key=row_id):
         if row_id not in st.session_state.checked_items:
